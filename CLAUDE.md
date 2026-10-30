@@ -35,3 +35,5 @@ Gaming Mode / Big Picture UI. Everything must work out of the box:
   (`location.reload()` in SharedJSContext); backend changes need
   `plugin_loader.service` restarted — which kills any session launched from
   the plugin. Call the `session_context` MCP tool to know which you are.
+
+See also AGENTS.md for the pipeline rules for agents working in this fork.
