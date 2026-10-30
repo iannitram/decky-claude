@@ -1,4 +1,4 @@
-Stage: Spec
+Stage: Roadmap
 Since: 2026-10-30
 Kind: fork (upstream: TuxLux40/decky-claude)
 Spec: SPEC.md   Roadmap: ROADMAP.md   Code map: docs/code-map.md
