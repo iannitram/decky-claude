@@ -1,6 +1,6 @@
 # Code map
 
-How the code is laid out, who owns what, and where the 1.0 work goes. Existing files are upstream's; **new** marks the skeleton I added at Roadmap (stubs only, nothing wired in yet). Line counts are from 2026-10-30.
+How the code is laid out, who owns what, and where the 1.0 work goes. Existing files are upstream's; **new** marks the skeleton I added at Roadmap (stubs only, nothing wired in yet). Line counts are from 2026-11-02.
 
 ## Processes
 
@@ -21,8 +21,8 @@ One Claude Code session, two views of it (ADR 0001). Python is stdlib only. The 
 
 | Module | Owns | Talks to | Must |
 |---|---|---|---|
-| `main.py` (1545) | Decky backend `Plugin`: starts and stops the session, working-dir setup and cleanup, login (`get_auth`, `start_login`), session list, settings, update info | `deck_common`, `machine_profile`, `terminal_session` (new), `cli_install` (new) | M1, M2, M3, M8 |
-| `mcp_server.py` (976) | MCP tools Claude calls: `steam_ui_eval`, `steam_snippet`, `screenshot`, input, `session_context`; the `SNIPPETS` table | Steam CEF `:8080`, gamescope, `deck_common`, `diagnose` (new) | M4, M5, M6 |
+| `main.py` (1564) | Decky backend `Plugin`: starts and stops the session, working-dir setup and cleanup, login (`get_auth`, `start_login`), session list, settings, update info | `deck_common`, `machine_profile`, `terminal_session` (new), `cli_install` (new) | M1, M2, M3, M8 |
+| `mcp_server.py` (990) | MCP tools Claude calls: `steam_ui_eval`, `steam_snippet`, `screenshot`, input, `session_context`; the `SNIPPETS` table | Steam CEF `:8080`, gamescope, `deck_common`, `diagnose` (new) | M4, M5, M6 |
 | `deck_common.py` (192) | Display env and xdotool/ydotool commands shared by backend and MCP | none | M4 |
 | `machine_profile.py` (323) | Hardware, OS and Steam profile written into the session's CLAUDE.md block | none | M6 |
 | `terminal_session.py` **new** | The tmux session: create, attach size, send keys/text, capture scrollback, stop | `tmux`, `main.py` | M2, M3 |
@@ -64,4 +64,4 @@ Linux only at runtime: Decky Loader on SteamOS. The pure parts (`diagnose.py`, `
 
 ## Tests
 
-`tests/` uses `unittest` (stdlib) for the Python modules; `pnpm typecheck` and `pnpm build` cover the panel. Hand tests in Gaming Mode are listed per Must in `SPEC.md`.
+`tests/` uses `unittest` (stdlib) for the Python modules; `tests/test_skeleton.py` is the only test file so far: one skipped placeholder per Must with Python code (M1, M2, M3, M6, M8), each issue fills in its own; `pnpm typecheck` and `pnpm build` cover the panel. Hand tests in Gaming Mode are listed per Must in `SPEC.md`.
