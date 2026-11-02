@@ -25,6 +25,22 @@ Gaming Mode / Big Picture UI. Everything must work out of the box:
   own installer. Don't break the version/sha256 contract in `src/update.tsx`.
 - The skill is the `vendor/skills` submodule; `skills/steam-debugger` is a
   symlink dereferenced at packaging time.
+- Every session gets the skill's learning-loop hook via `--settings`
+  (`_learning_loop_settings`): findings go to the user's local
+  `~/.local/share/steam-debugger/learnings.md`. Only a machine with
+  `~/.config/steam-debugger/repo` promotes into the skill repo.
+
+## Synthetic input (`deck_common.key_commands` and friends)
+
+- Games sample input per frame and miss instant taps: `send_key` holds keys
+  (`DEFAULT_KEY_HOLD_MS` = 120, below X's autorepeat delay). Don't shorten it
+  to 0 by default.
+- Never use `--clearmodifiers` on a held key (keydown/keyup). Its
+  release-and-re-press of modifiers left RE4 under Proton with a key it saw
+  as held — Ashley couldn't walk until `xdotool keyup …` on `:1`
+  (2026-10-31). The instant-tap path keeps it, as before.
+- Input goes to the Xwayland that holds gamescope's focus (`input_env`);
+  `:0` is usually Steam, the game is on `:1`.
 
 ## Testing
 
