@@ -9,6 +9,11 @@ def find_installed(data_dir: str) -> str | None:
     raise NotImplementedError
 
 
+def is_newer(installed: str, latest: str) -> bool:
+    """True when the dotted version `latest` is above `installed` (`claude --version` text); False when either cannot be read."""
+    raise NotImplementedError
+
+
 def install(data_dir: str) -> str:
     """Install the CLI into `data_dir` and return its path; raise RuntimeError with a plain sentence and the fix on failure."""
     raise NotImplementedError
