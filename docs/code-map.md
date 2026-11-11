@@ -23,7 +23,7 @@ Status: **present** = the code does this job today (upstream's code, or ours onc
 
 | Module | Owns | Talks to | Must | Feature | Status |
 |---|---|---|---|---|---|
-| `main.py` (1564) | Decky backend `Plugin`: starts and stops the session, working-dir setup and cleanup, login (`get_auth`, `start_login`), session list, settings, update info; later the chat, terminal and CLI callables | `deck_common`, `machine_profile`, `terminal_session`, `transcript`, `cli_install` | M1, M2, M3, M7, M8 | session-core, chat, terminal-tab, login, plain-errors, cleanup | present (pty session; moves to tmux in session-core) |
+| `main.py` (1564) | Decky backend `Plugin`: starts and stops the session, working-dir setup and cleanup (also the trust and MCP entry it writes into the user's Claude Code config file, the skills link and the learning-loop hook), login (`get_auth`, `start_login`), session list, settings, update info; later the chat, terminal and CLI callables | `deck_common`, `machine_profile`, `terminal_session`, `transcript`, `cli_install` | M1, M2, M3, M7, M8 | session-core, chat, terminal-tab, login, plain-errors, cleanup | present (pty session; moves to tmux in session-core) |
 | `mcp_server.py` (990) | MCP tools Claude calls: `steam_ui_eval`, `steam_snippet`, `screenshot`, input, `session_context`; the `SNIPPETS` table; later `steam_setting` (with its `SETTINGS` table) and `game_diagnose` | Steam CEF `:8080`, gamescope, `deck_common`, `diagnose` | M4, M5, M6 | game-context, steam-settings, launch-diagnosis | present (`steam_setting`, `game_diagnose` planned) |
 | `deck_common.py` (216) | Display env and xdotool/ydotool commands shared by backend and MCP | none | M4 | (upstream) | present |
 | `machine_profile.py` (323) | Hardware, OS and Steam profile written into the session's CLAUDE.md block | none | M6 | (upstream) | present |
@@ -35,8 +35,8 @@ Status: **present** = the code does this job today (upstream's code, or ours onc
 | `src/chat/ChatView.tsx` | Chat view: messages, input, on-screen keyboard, focus, Approve / Not now for a fix | `main.py` callables, `chat_message` events | M2, M4, M6 | chat, launch-diagnosis | planned |
 | `src/terminal/TerminalTab.tsx` | Terminal tab: rendered scrollback, touch scroll, key row | `main.py` callables, `terminal_output` events | M3 | terminal-tab | planned |
 | `src/errors.ts` | One place that turns backend and CLI errors into plain sentences with the fix | all views | M7 | plain-errors | planned |
-| `src/sidebarTab.tsx` (225), `src/update.tsx` (195) | Optional sidebar icon; self-update (reads the release repo named in `main.py` `_UPDATE_REPO`) | Decky, GitHub releases | kept | release | present |
-| `.github/workflows/release.yml` | Builds the release zip from a fixed file list; publishes on push to `main` | GitHub | 1.0 line | release | present (new modules not in its list yet) |
+| `src/sidebarTab.tsx` (225), `src/update.tsx` (195) | Optional sidebar icon; self-update (reads the release repo named in `main.py` `_UPDATE_REPO`: upstream's today, this fork's after the updater issue) | Decky, GitHub releases | kept | release | present (repo and version 1.1.0 planned) |
+| `.github/workflows/release.yml` | Builds the release zip from a fixed file list; publishes on push to `main` when the workflow is enabled | GitHub | 1.0 line | release | present (new modules not in its list yet; disabled in the repo's Actions settings since 2026-11-11, turned back on by the last `release` issue) |
 | `skills/steam-debugger` | The always-loaded debugging skill (submodule `vendor/skills`, upstream's) | `mcp_server.py` | M5, M6 | (upstream) | present |
 | `scripts/setup-input-tools.sh` | Installs input helper tools | none | M4 | (upstream) | present |
 
@@ -47,6 +47,7 @@ Status: **present** = the code does this job today (upstream's code, or ours onc
 - Session to tools: `claude --mcp-config` starts `mcp_server.py`; its tools are the only way Claude touches Steam, the screen and input.
 - `diagnose.py` is imported by `mcp_server.py` (tool `game_diagnose`) and is pure: reads files, takes paths as arguments, so tests feed it fixtures.
 - Release packaging copies a fixed file list (`release.yml`, the `cp` line): every new root module must be added there or it never ships.
+- Outside writes: besides the working directory, the backend writes the trust and MCP entry (`_trust_working_dir`) into the user's Claude Code config file, and the skill's learning-loop hook (wired by `_learning_loop_settings`) writes a learnings file in the user's data folder. Both are undone by the `cleanup` issues (M8, my ruling of 2026-11-11).
 
 ## Where new work goes
 
@@ -59,7 +60,7 @@ Status: **present** = the code does this job today (upstream's code, or ours onc
 | M5 | New MCP tool `steam_setting` (read, set) in `mcp_server.py`, entries in its own `SETTINGS` allow-list table |
 | M6 | `diagnose.py` + MCP tool `game_diagnose`, one line in the session's CLAUDE.md block (the steam-debugger skill is upstream's submodule: changes to it are sent upstream), Approve / Not now in `ChatView.tsx` |
 | M7 | `src/errors.ts`, then each backend `error` string |
-| M8 | `_setup_working_dir` records what existed; `_cleanup_working_dir` restores it byte for byte; `stop_session` removes the tmux socket and output log |
+| M8 | `_setup_working_dir` records what existed; `_cleanup_working_dir` restores it byte for byte; `stop_session` removes the tmux socket and output log; `_trust_working_dir` records which of the two flags it added to the user's Claude Code config file and cleanup takes those out again; the learning-loop file goes back to what it was before the session, with the session's learnings kept in the plugin's data directory |
 
 ## Platforms (R04)
 

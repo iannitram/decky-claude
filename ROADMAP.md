@@ -14,7 +14,7 @@ features:
 - steam-settings: Check and change Steam and Deck settings through the Steam UI debugger (M5)
 - launch-diagnosis: Explain why a game will not launch, with a fix to approve (M6)
 - plain-errors: Every failure shown in the panel as a plain sentence with the fix (M7)
-- cleanup: Stopping the session leaves the working directory as it was (M8)
+- cleanup: Stopping the session undoes every write outside the plugin's folders (M8)
 - design-pass: The pre-1.0 design pass over the running panel (R04)
 - voice: Voice input with local whisper.cpp, after 1.0 (W1)
 - upstream-planned: Upstream's planned items, merged from upstream after 1.0 (W6)
@@ -25,7 +25,7 @@ Every issue carries exactly one `feature:<id>` label from this block and one mil
 
 | Feature | Must | Upstream or fork | What exists today |
 |---|---|---|---|
-| release | 1.0 line ("from a release zip") | keep on our fork | release workflow and self-updater exist upstream; the new modules are not in the zip's file list, and the updater reads upstream's releases |
+| release | 1.0 line ("from a release zip") | keep on our fork | release workflow and self-updater exist upstream; the new modules are not in the zip's file list, the updater still reads upstream's releases, and the workflow is switched off in this fork until the 1.0 zip (Rulings) |
 | session-core | M2, M3 | keep on our fork | the session runs on a private pty; tmux is ADR 0001 |
 | chat | M2 | keep on our fork | `ChatView.tsx` and `transcript.py` stubs |
 | game-context | M4 | exists upstream (`screenshot`) | the chat must lead Claude to it |
@@ -34,7 +34,7 @@ Every issue carries exactly one `feature:<id>` label from this block and one mil
 | steam-settings | M5 | send upstream | `steam_ui_eval` and `steam_snippet` exist; no settings tool |
 | launch-diagnosis | M6 | send upstream | `diagnose.py` stub |
 | plain-errors | M7 | keep on our fork | `src/errors.ts` stub; backend errors are partly plain |
-| cleanup | M8 | send upstream | `_cleanup_working_dir` exists but leaves a `.claude/` folder and reformats files it touched |
+| cleanup | M8 | send upstream | `_cleanup_working_dir` exists but leaves a `.claude/` folder and reformats files it touched; the trust and MCP entry in the user's Claude Code config file and the learning-loop file are never undone (Rulings) |
 | design-pass | R04 | keep on our fork | runs last |
 | voice | W1 | keep on our fork | after 1.0 |
 | upstream-planned | W6 | upstream's (TuxLux40/decky-claude #5, #6, #7, #9) | after 1.0; merged when upstream ships them |
@@ -45,16 +45,16 @@ Upstream (TuxLux40/decky-claude) moved 4 commits after the spec (2026-10-31: hel
 
 ## Dev stages
 
-1. **Groundwork (release).** The zip ships the new modules; pipeline docs no longer trigger a release. The self-updater's source and whether this fork publishes at all wait on my ruling (Risks).
-2. **Session core (session-core, cleanup).** `terminal_session.py` on tmux, then `main.py` runs the one session there; cleanup restores the working directory byte for byte, and stopping removes the session's own files.
+1. **Groundwork (release).** The zip ships the new modules; pipeline docs no longer trigger a release; the self-updater reads this fork's releases and our version goes to 1.1.0 (Rulings). The release workflow is switched off for the whole build.
+2. **Session core (session-core, cleanup).** `terminal_session.py` on tmux, then `main.py` runs the one session there; cleanup restores the working directory byte for byte, stopping removes the session's own files, and cleanup also undoes the plugin's writes outside its folders: the trust and MCP entry in the user's Claude Code config file, the skills link and the learning-loop file (Rulings).
 3. **Chat (chat, game-context).** `transcript.py`, backend chat events, `ChatView.tsx`, the Chat / Terminal tab switch with the on-screen keyboard and controller focus; then "what is on screen?" through the screenshot tool.
 4. **Terminal tab (terminal-tab).** Screen capture, keys and resize in the backend; `TerminalTab.tsx` with touch scrolling and a key row.
-5. **Login and CLI (login).** `find_installed` and `is_newer`, then install and update into the plugin's data directory, the backend using that copy, and the login states in the panel.
+5. **Login and CLI (login).** `find_installed` and `is_newer`, then install and update into the plugin's data directory, the backend using that copy, and the login states in the panel. The install method (Anthropic's native `claude` binary kept in the plugin's data directory) is my working assumption, not a ruling.
 6. **Settings and diagnosis (steam-settings, launch-diagnosis).** The `steam_setting` tool and its checked settings table; `parse_vdf`, `summarize`, `collect`, the `game_diagnose` tool and the one-tap fix in the chat.
 7. **Errors (plain-errors).** The `plainError` table with its CI test, then every backend failure as a plain sentence with the fix.
-8. **Design pass (design-pass, last before 1.0, R04).** `baoyu-design` over the running panel in Gaming Mode against the design system shared by all our apps; its findings are filed as `design-pass` issues and built before Prototype / Beta.
+8. **Design pass (design-pass, last before 1.0, R04).** `baoyu-design` over the running panel in Gaming Mode against the design system shared by all our apps; its findings are filed as `design-pass` issues and built before Prototype / Beta. Then the release workflow is turned back on and publishes the 1.0 zip (Rulings); that is a switch, not a dev stage.
 
-Order: stage 1 first. The pure pieces (`transcript`, `cli_install.find_installed`/`is_newer`, `parse_vdf`, `summarize`, `plainError`, the `steam_setting` plumbing, the cleanup restore) need nothing and can start at once. Stage 2 comes before the chat and terminal backends; stages 5, 6 and 7 are independent of each other; the design pass waits for everything else. The `Blocked by` lines on the issues are the exact order.
+Order: stage 1 first. The pure pieces (`transcript`, `cli_install.find_installed`/`is_newer`, `parse_vdf`, `summarize`, `plainError`, the `steam_setting` plumbing, the cleanup restore) need nothing and can start at once. Stage 2 comes before the chat and terminal backends; stages 5, 6 and 7 are independent of each other; the design pass waits for everything else, and turning releases back on waits for the design pass. The `Blocked by` lines on the issues are the exact order.
 
 ## Mac, PC and Linux (R04)
 
@@ -81,9 +81,19 @@ License rules per R41: code only where the license allows it, with credit in the
 
 Libraries: none added. Python stays stdlib only; the panel keeps upstream's dependencies (`@decky/ui`, `@decky/api`). A VDF reader is written fresh (`parse_vdf`, about 50 lines) rather than adding a dependency the release zip would have to vendor.
 
+## Rulings (2026-11-11)
+
+My answers through the question tool on 2026-11-11, quoted as given. They settle what the proposal had held as risks.
+
+- **Updater.** "Point at our fork (Recommended)": the updater reads iannitram/decky-claude releases, and our version jumps to 1.1.0 so it stays above upstream's. Today `_UPDATE_REPO` in `main.py` is upstream's repo, so an install of our zip would be offered upstream's newer build (v1.0.15) and lose our delta. Plan: one issue points `_UPDATE_REPO` at this fork, one sets the version in `package.json` and `plugin.json` to 1.1.0 (the release workflow takes the higher of that and the last tag plus one patch, so our first release is v1.1.0). Feature `release`, stage 1.
+- **Releases.** "Disable until 1.0 (Recommended)": turn the release workflow off now, as the spec says; an issue in the roadmap batch turns it back on for the 1.0 zip. The workflow had published v1.0.13 (2026-10-30) and v1.0.14 (2026-11-02) from this fork. It was disabled in the repo's Actions settings on 2026-11-11 (the file is unchanged, so merges from upstream stay clean). Plan: the last `release` issue turns it back on after the design pass and checks the zip and the update offer. Until then nothing is published and hand tests install a local build.
+- **Cleanup.** "Remove them too (Recommended)": cleanup undoes every write outside the plugin's folders (the trust and MCP entry in [the home folder's] .claude.json, the learning-loop file, the skills link), as the spec's wording says; adds one issue. Plan: two Medium issues instead of one, because together they pass Medium: one for the trust and MCP entry and the skills link, one for the learning-loop file (the hook that writes it is in upstream's skill, so it has an unknown of its own). Feature `cleanup`, stage 2.
+
+Not a ruling: the CLI install method. The plan keeps what the proposal assumed, Anthropic's native `claude` binary in the plugin's data directory (stage 5). That is my working assumption; it changes if I rule otherwise.
+
 ## Risks
 
-- **The release workflow is on in this fork and has published v1.0.13 (2026-10-30) and v1.0.14 (2026-11-02)**, though the spec says it stays off until I say so. Pushes that touch `SPEC.md`, `ROADMAP.md`, `PIPELINE.md` or `CHANGELOG.md` also release, because only `README.md`, `CLAUDE.md`, `docs/**`, `assets/**`, `scripts/prototypes/**` and `.github/**` are ignored (the release issue fixes the list).
-- **The self-updater reads upstream's releases** (`_UPDATE_REPO = "TuxLux40/decky-claude"`). An install of our zip offers upstream's newer version (v1.0.15 today) and would replace our delta with upstream's build. Held for my ruling: point it at this fork with versions above upstream's, or keep auto-update off in our builds.
 - Hardware tests in Gaming Mode cannot run in CI; each UI issue carries a hand-test step on a SteamOS handheld.
 - Steam's internal UI API (`steam_setting`) changes between client versions; each settings entry records the client version it was checked on.
+- With releases off there is no published zip to install during the build: hand tests use a local build (`pnpm build`, then the same file list the workflow packs).
+- The skill is a submodule of upstream's skills repo (`vendor/skills`). On 2026-11-11 that repo answered "not found" to a public read, so a fresh clone cannot fetch the skill and the release build (which checks out submodules) would fail. The issue that turns releases back on checks this first; if upstream does not bring the repo back, the skill has to be vendored from an existing checkout.

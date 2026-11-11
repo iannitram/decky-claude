@@ -74,6 +74,10 @@ A Quick Access Menu panel with a chat view and a terminal tab on the same Claude
 - Claude Code login only, guided in the panel; the plugin installs and updates the `claude` CLI.
 - Upstream's `CLAUDE.md` rules (layman in Gaming Mode, no collateral writes, plain-language failures, hardware test) apply unchanged. `CLAUDE.md` gets one added line pointing at `AGENTS.md`.
 - Upstream's release workflow publishes on every push to main; it stays off in this fork until I say so.
+- My rulings of 2026-11-11 (question tool, quoted as given; they add to my delta and change no Must or Won't):
+  - Releases: "Disable until 1.0 (Recommended)": turn the release workflow off now, as the spec says; an issue in the roadmap batch turns it back on for the 1.0 zip.
+  - Updater: "Point at our fork (Recommended)": the updater reads iannitram/decky-claude releases, and our version jumps to 1.1.0 so it stays above upstream's. The self-update itself stays upstream's (through Decky's installer).
+  - Cleanup (how M8 is read): "Remove them too (Recommended)": cleanup undoes every write outside the plugin's folders (the trust and MCP entry in [the home folder's] .claude.json, the learning-loop file, the skills link), as the spec's wording says; adds one issue.
 
 ## Testing decisions
 
