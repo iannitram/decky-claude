@@ -1,6 +1,6 @@
 {
   "name": "decky-claude",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Start Claude Code remote sessions from Gaming Mode",
   "type": "module",
   "scripts": {
