@@ -35,7 +35,7 @@ Status: **present** = the code does this job today (upstream's code, or ours onc
 | `src/chat/ChatView.tsx` | Chat view: messages, input, on-screen keyboard, focus, Approve / Not now for a fix | `main.py` callables, `chat_message` events | M2, M4, M6 | chat, launch-diagnosis | planned |
 | `src/terminal/TerminalTab.tsx` | Terminal tab: rendered scrollback, touch scroll, key row | `main.py` callables, `terminal_output` events | M3 | terminal-tab | planned |
 | `src/errors.ts` | One place that turns backend and CLI errors into plain sentences with the fix | all views | M7 | plain-errors | planned |
-| `src/sidebarTab.tsx` (225), `src/update.tsx` (195) | Optional sidebar icon; self-update (reads the release repo named in `main.py` `_UPDATE_REPO`: upstream's today, this fork's after the updater issue) | Decky, GitHub releases | kept | release | present (repo and version 1.1.0 planned) |
+| `src/sidebarTab.tsx` (225), `src/update.tsx` (195) | Optional sidebar icon; self-update (reads the release repo named in `main.py` `_UPDATE_REPO`: this fork's) | Decky, GitHub releases | kept | release | present |
 | `.github/workflows/release.yml` | Builds the release zip from a fixed file list; publishes on push to `main` when the workflow is enabled | GitHub | 1.0 line | release | present (new modules not in its list yet; disabled in the repo's Actions settings since 2026-11-11, turned back on by the last `release` issue) |
 | `skills/steam-debugger` | The always-loaded debugging skill (submodule `vendor/skills`, upstream's) | `mcp_server.py` | M5, M6 | (upstream) | present |
 | `scripts/setup-input-tools.sh` | Installs input helper tools | none | M4 | (upstream) | present |

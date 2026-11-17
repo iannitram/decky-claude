@@ -186,7 +186,7 @@ likely on their phone, and may not be able to read long output comfortably.
 # (utilities/install_plugin), exactly the path the store uses. Nothing here
 # writes plugin files.
 
-_UPDATE_REPO = "TuxLux40/decky-claude"
+_UPDATE_REPO = "iannitram/decky-claude"
 _UPDATE_API = f"https://api.github.com/repos/{_UPDATE_REPO}/releases/latest"
 _UPDATE_ASSET = "decky-claude.zip"
 _UPDATE_TTL = 6 * 3600       # a successful check is good for this long
