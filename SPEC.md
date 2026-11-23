@@ -38,18 +38,7 @@ Things 1.0 will not do, so nobody builds them by accident.
 
 ## Prior art
 
-Projects doing the same thing, approved by me at Spec and reviewed weekly. Their code comes in only when their license allows it, with credit; otherwise only their ideas.
-
-peer: TuxLux40/decky-claude | MIT | upstream: remote-control session, Steam UI debugger MCP, screenshots, input, self-update
-peer: SpysyWeeb/decky-claude-terminal | BSD-3-Clause | tmux terminal panel in the Quick Access Menu, on-screen keyboard, touch scrolling, whisper.cpp voice
-peer: Alex4386/decky-terminal | BSD-3-Clause | general terminal emulator for Gaming Mode; how it handles input and focus
-peer: tetractius/Decky-LLM | BSD-3-Clause | screenshot a game and chat about it with Claude, OpenAI or Ollama
-peer: lbr88-labs/decky-chatgpt-community | MIT | ChatGPT controls and voice mode inside Gaming Mode
-peer: TuxLux40/decky-ollama | MIT | running a local model in Gaming Mode
-peer: mark-lacdao/decky-gemini-plugin | GPL-3.0 | chat with Gemini from the Quick Access Menu (copyleft: ideas only)
-peer: Forlarin/deck-doctor | BSD-3-Clause | explains in plain English why a game will not launch and fixes it with one tap
-peer: siteboon/claudecodeui | AGPL-3.0 | Claude Code from mobile and web; session and chat UI (copyleft: ideas only)
-peer: JoelBrace/DeckyClaude | none | an early Claude plugin for Decky (no license: ideas only)
+The upstream and the peer list are in [`PEERS.md`](PEERS.md) at the repo root.
 
 ## Problem
 
